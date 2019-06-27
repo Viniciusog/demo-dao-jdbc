@@ -85,7 +85,6 @@ public class SellerDaoJDBC implements SellerDao {
 	}
 
 	//Metodo para fazer instanciação de Departamento - Ficar mais organizado
-	
 	private Department instantiateDepartment(ResultSet rs) throws SQLException {
 		
 		//Colocamos o nome da coluna específica do banco de dados para pegar as informações
@@ -97,7 +96,45 @@ public class SellerDaoJDBC implements SellerDao {
 
 	@Override
 	public List<Seller> findAll() {
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as DepName "
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id "
+					+ "ORDER BY Name");
+			
+
+			rs = st.executeQuery();
+			
+			List<Seller> list = new ArrayList<>();
+			Map<Integer, Department> map = new HashMap<>();
+			 
+			while (rs.next()) {			
+
+				//Se o departamento existir eu vou reutilizar ele
+				//Se não existir eu vou instanciar ele e salvar dentro do meu map
+				
+				Department dep = map.get(rs.getInt("DepartmentId"));
+				
+				if(dep == null) {
+					dep = instantiateDepartment(rs);	
+					map.put(rs.getInt("DepartmentId"), dep); 
+				}			 			
+				Seller obj = instantiateSeller(rs, dep);
+				list.add(obj);
+				
+			} 			
+			return list;		
+		} catch (SQLException e) {		
+			throw new DbException(e.getMessage());
+			
+		}finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);		
+		}
 	}
 
 	//Aula 223
