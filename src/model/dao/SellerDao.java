@@ -2,6 +2,7 @@ package model.dao;
 
 import java.util.List;
 
+import model.entities.Department;
 import model.entities.Seller;
 
 public interface SellerDao {
@@ -14,4 +15,5 @@ public interface SellerDao {
 		void deleteById(Integer id);
 		Seller findById(Integer id); //Retornará um objeto do banco de dados a partir do id. Se não tiver, retorna nulo
 		List<Seller> findAll();      //Retornará todos os sellers em uma lista
+		List<Seller> findByDepartment(Department department);
 }
