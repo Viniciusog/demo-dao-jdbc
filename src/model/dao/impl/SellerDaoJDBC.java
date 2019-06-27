@@ -53,20 +53,9 @@ public class SellerDaoJDBC implements SellerDao {
 			st.setInt(1, id);
 			rs = st.executeQuery();
 			
-			if(rs.next()) {
-				//Colocamos o nome da coluna específica do banco de dados para pegar as informações
-				
-				Department dep = new Department();
-				dep.setId(rs.getInt("DepartmentId"));   
-				dep.setName(rs.getString("DepName"));
-				
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-				obj.setDepartment(dep);
+			if(rs.next()) {			
+				Department dep = instantiateDepartment(rs);				
+				Seller obj = instantiateSeller(rs, dep);
 				return obj;
 			} 
 			return null;
@@ -77,6 +66,31 @@ public class SellerDaoJDBC implements SellerDao {
 			DB.closeStatement(st);
 			DB.closeConnection();
 		}
+	}
+
+	//Metodo para fazer instanciação de Sellers - Ficar mais organizado	
+	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
+		
+		//Colocamos o nome da coluna específica do banco de dados para pegar as informações	
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep);
+		return obj;
+	}
+
+	//Metodo para fazer instanciação de Departamento - Ficar mais organizado
+	
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		
+		//Colocamos o nome da coluna específica do banco de dados para pegar as informações
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId"));   
+		dep.setName(rs.getString("DepName"));
+		return dep;
 	}
 
 	@Override
